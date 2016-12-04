@@ -13,15 +13,15 @@
 - defer
 - resolve
 - reject
+- sequence
 
 ### 实例方法
 - wait
 - always
 - done
 - timeout
-- sequence
 
-## 扩展说明
+## 扩展方法说明
 
 ### all
 
