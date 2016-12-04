@@ -111,7 +111,30 @@ Promise.race([fn1(), fn2()]).then(res=>console.log(res), err=>console.log(err))
 // 2
 ```
 
+### resolve
+
+用于包装任意对象为promise对象，返回一个新的promise,并且状态是resolved
+
+```javascript
+Promise.resolve = function(value){
+  if(value instanceof this) return value;
+  return executeCallback.bind(new this())('resolve', value);
+}
+```
+
+### reject
+
+用于包装任意对象为promise对象，返回一个新的promise,并且状态是rejected
+
+```javascript
+Promise.reject = function(value){
+  if(value instanceof this) return value;
+  return executeCallback.bind(new this())('reject', value);
+}
+```
+
 ### wait
+
 用于一个promise任务结束后等待指定的时间再去执行一些操作
 
 ```javascript
@@ -137,6 +160,7 @@ fn1().wait(2000).then(res=>console.log(res),err=>console.log(err))
 这里考虑到，`wait` 是用于promise实例对象上的，那么为了可以保证链式调用，必须返回一个 `新的promise`，并且上一步的成功和失败的消息不能丢失，继续向后传递，这里只做延迟处理。
 
 ### stop
+
 用于中断promise链
 
 通常在 `promise链` 中去reject或throw，或者是异常报错信息，promise内部都会使用 `try...catch` 转换为 `reject` 方法往后传递，无法中断后面的 `then` 或其它方法的执行，那么这里利用，`then` 方法中对状态的要求必须不是 `Pending` 状态的处理才会立即执行回调，在 `promise链` 中返回一个初始状态的 `Promise对象`，便可以中断后面回调的执行。
@@ -161,6 +185,7 @@ Promise
 ```
 
 ### always
+
 无论成功还是失败最终都会调用 `always` 中注册的回调
 
 ```javascript
@@ -172,6 +197,7 @@ Promise.prototype.always = function(fn){
   })
 }
 ```
+
 使用
 
 ```javascript
@@ -210,6 +236,7 @@ ajaxLoadData()
 ```
 
 ### defer
+
 `Deferred` 的简称，叫延迟对象，其实是 `new Promise()` 的语法糖
 
 与Promise的关系
@@ -256,6 +283,7 @@ function getURL(URL) {
 ```
 
 ### timeout
+
 用于判断某些promise任务是否超时
 如一个异步请求，如果超时，取消息请求，提示消息或重新请求
 
