@@ -2,7 +2,7 @@
 
 如果你喜欢，烦请给个 `star` ,谢谢!
 
-详细实现过程，请阅读我的分享 [深入理解 Promise (中)]()
+详细实现过程，请阅读我的分享 [深入理解 Promise (中)](http://coderlt.coding.me/2016/12/04/promise-in-depth-an-introduction-2/)
 
 ## 扩展方法
 
