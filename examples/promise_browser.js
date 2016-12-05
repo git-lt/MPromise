@@ -1,8 +1,10 @@
+//为了兼容ES6 的Promise，改造了 Promise.deferred 方法，去掉了defer内部对 Promise 的引用，改用this来代替。
+
 ;(function(scope) {
     var PENDING = 'pending';
     var RESOLVED = 'resolved';
     var REJECTED = 'rejected';
-    var UNDEFINED = void 0;
+    var TIMEOUT_MSG = 'timeout';
 
     function CallbackItem(promise, onResolved, onRejected) {
         this.promise = promise;
@@ -95,7 +97,7 @@
         if (resolver && typeof resolver !== 'function') {
             throw new Error('Promise resolver is not a function') }
         this.state = PENDING;
-        this.data = UNDEFINED;
+        this.data = void 0;
         this.callbackQueue = [];
 
         if (resolver) executeResolver.call(this, resolver);
@@ -209,9 +211,9 @@
         })
     }
     Promise.stop = function() { return new this(); }
-    Promise.deferred = Promise.defer = function() {
+    Promise.deferred = function() {
         var dfd = {};
-        dfd.promise = new Promise(function(resolve, reject) {
+        dfd.promise = new this(function(resolve, reject) {
             dfd.resolve = resolve;
             dfd.reject = reject;
         })
@@ -226,7 +228,6 @@
                 return res });
         }, this.resolve());
     }
-
 
     function TimeoutError(message) { 
         this.message = message || ''; 

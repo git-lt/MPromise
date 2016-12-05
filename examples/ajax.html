@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Ajax 超时处理</title>
+	<style>
+		body { background-color: #7E93A6; padding: 50px; color:#fff; }
+	</style>
+</head>
+<body>
+	<script src="promise_browser.js"></script>	
+	<script>
+
+	function ajaxGet(URL) {
+	    var deferred = MPromise.deferred();
+	    var req = new XMLHttpRequest();
+	    req.open('GET', URL, true);
+	    req.onload = function () {
+	        if (req.status === 200) {
+	            setTimeout(function(){deferred.resolve(req.responseText)}, 3500)
+	        } else {
+	            setTimeout(function(){deferred.reject(new Error(req.statusText))}, 3500)
+	        }
+	    };
+	    req.onerror = function () {
+	        setTimeout(function(){deferred.reject(new Error(req.statusText))}, 3500)
+	    };
+
+	    req.send();
+		
+		var abort = function () {
+	        if (req.readyState !== XMLHttpRequest.UNSENT) {
+	            req.abort();
+	        }
+	    };
+
+	    return {
+		    promise: deferred.promise,
+		    abort: abort
+	    }
+	}
+
+	var getData = ajaxGet('d1.json');
+
+	// getData.promise.then(res=>JSON.parse(res))
+	// 	.catch(err=>console.log(err))
+	// 	.then(res=>console.log(res))
+
+
+	// 发起一个异步请求，如果3s内还没有请求成功，则取消请求
+	console.log('显示loading')
+	MPromise.timeout(getData.promise, 3000)
+		.then(res=>{
+			return JSON.parse(res);
+		}, err=>{
+			if(err instanceof window.TimeoutError){
+				getData.abort();
+				throw new Error('请求超时，取消请求')
+			}else{
+				throw err;
+			}
+		})
+		.then(res=>{ console.log('请求成功: ', res); })
+		.always(()=>{ console.log('取消loading') })
+		.catch(err=>{ console.log(err) })
+
+	</script>
+</body>
+</html>
